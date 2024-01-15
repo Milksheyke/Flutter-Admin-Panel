@@ -1,14 +1,15 @@
+import 'package:admin/screens/main/main_screen.dart';
 import 'package:flutter/material.dart';
 
 class MenuAppController extends ChangeNotifier {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  String _currentScreen = 'dashboard';
-  String get currentScreen => _currentScreen;
+  Routes _currentScreen = Routes.dashboard;
+  Routes get currentScreen => _currentScreen;
 
   GlobalKey<ScaffoldState> get scaffoldKey => _scaffoldKey;
 
-  void setCurrentScreen(String screen) {
+  void setCurrentScreen(Routes screen) {
     _currentScreen = screen;
     notifyListeners();
   }

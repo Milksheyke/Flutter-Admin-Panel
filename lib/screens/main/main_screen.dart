@@ -11,11 +11,23 @@ import 'package:provider/provider.dart';
 
 import 'components/side_menu.dart';
 
-class Routes {
-  static const String dashboard = 'dashboard';
-  static const String transactions = 'transactions';
-  static const String itemsManager = 'itemsManager';
-  static const String settings = 'settings';
+enum Routes { dashboard, transactions, itemsManager, settings }
+
+extension RoutesExtension on Routes {
+  String get title {
+    switch (this) {
+      case Routes.dashboard:
+        return "Dashboard";
+      case Routes.transactions:
+        return "Transactions";
+      case Routes.itemsManager:
+        return "Items Manager";
+      case Routes.settings:
+        return "Settings";
+      default:
+        return "Oops. Don't know what the title should be";
+    }
+  }
 }
 
 class MainScreen extends StatelessWidget {
