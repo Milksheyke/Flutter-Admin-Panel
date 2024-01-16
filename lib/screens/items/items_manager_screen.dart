@@ -1,10 +1,11 @@
-import 'package:admin/constants.dart';
+import 'package:admin/constants_and_variables.dart';
+import 'package:admin/controllers/MenuAppController.dart';
 import 'package:admin/responsive.dart';
 import 'package:admin/screens/dashboard/components/storage_details.dart';
 import 'package:admin/screens/main/components/header.dart';
+import 'package:aliafitness_shared_classes/aliafitness_shared_classes.dart';
 import 'package:flutter/material.dart';
-
-import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class FileItem {
   final String name;
@@ -71,31 +72,11 @@ class MyFiles extends StatelessWidget {
   }
 }
 
-class Item {
-  final String photoUrl;
-  final String name;
-  final double price;
-
-  Item({required this.photoUrl, required this.name, required this.price});
-  // Add other properties and methods as needed
-}
-
 class ItemsManagerScreen extends StatelessWidget {
-  final List<Item> items = [
-    // Here, add some sample items or fetch from your database
-    Item(
-        photoUrl: 'https://example.com/photo1.jpg',
-        name: 'Item 1',
-        price: 10.0),
-    Item(
-        photoUrl: 'https://example.com/photo2.jpg',
-        name: 'Item 2',
-        price: 15.0),
-    // Add more items
-  ];
-
   @override
   Widget build(BuildContext context) {
+    Provider.of<MenuAppController>(context).fetchItems();
+    List<Item> items = context.watch<MenuAppController>().items;
     return SafeArea(
       child: SingleChildScrollView(
         primary: false,
@@ -117,7 +98,7 @@ class ItemsManagerScreen extends StatelessWidget {
                         SizedBox(height: defaultPadding),
                       if (Responsive.isMobile(context)) StorageDetails(),
                       SizedBox(height: defaultPadding),
-                      ItemsManager(items: items), // Add the Items Manager here
+                      ItemsManager(items: items),
                     ],
                   ),
                 ),
@@ -155,8 +136,7 @@ class ItemsManager extends StatelessWidget {
         rows: items
             .map(
               (item) => DataRow(cells: [
-                DataCell(Image.network(
-                    item.photoUrl)), // Assuming you're using URLs for images
+                DataCell(Image.network(item.photoUrl!)),
                 DataCell(Text(item.name)),
                 DataCell(Text('\$${item.price.toStringAsFixed(2)}')),
               ]),

@@ -42,8 +42,7 @@ class Error404Screen extends StatelessWidget {
                 },
                 child: Text('Take Me Home'),
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.blue,
-                  onPrimary: Colors.white,
+                  foregroundColor: Colors.white, backgroundColor: Colors.blue,
                   padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                 ),
               ),
