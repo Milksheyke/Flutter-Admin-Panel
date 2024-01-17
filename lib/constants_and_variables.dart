@@ -8,3 +8,4 @@ const defaultPadding = 16.0;
 
 String placeholderImage =
     "https://placehold.co/800?text=Item_Image&font=roboto";
+String editText = 'Edit';

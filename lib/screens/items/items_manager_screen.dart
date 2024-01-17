@@ -134,6 +134,7 @@ class ItemsManager extends StatelessWidget {
           DataColumn(label: Text('Photo')),
           DataColumn(label: Text('Name')),
           DataColumn(label: Text('Price')),
+          DataColumn(label: Text('Action')),
         ],
         rows: items
             .map(
@@ -143,6 +144,10 @@ class ItemsManager extends StatelessWidget {
                     : Image.network(item.photoUrl!)),
                 DataCell(Text(item.name)),
                 DataCell(Text('\$${item.price.toStringAsFixed(2)}')),
+                DataCell(TextButton(
+                  child: Text(editText),
+                  onPressed: () {},
+                )),
               ]),
             )
             .toList(),
