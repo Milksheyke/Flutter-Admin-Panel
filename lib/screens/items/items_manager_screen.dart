@@ -6,6 +6,7 @@ import 'package:admin/screens/main/components/header.dart';
 import 'package:aliafitness_shared_classes/aliafitness_shared_classes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class FileItem {
   final String name;
@@ -20,57 +21,57 @@ class FileItem {
       required this.iconUrl});
 }
 
-class MyFiles extends StatelessWidget {
-  final List<FileItem> files = [
-    // Sample files. Replace with your actual data
-    FileItem(
-        name: 'Document',
-        type: 'PDF',
-        size: 500,
-        iconUrl: 'assets/icons/doc_file.svg'),
-    FileItem(
-        name: 'Image',
-        type: 'Image',
-        size: 300,
-        iconUrl: 'assets/icons/image_file.svg'),
-    // Add more files
-  ];
+// class MyFiles extends StatelessWidget {
+//   final List<FileItem> files = [
+//     // Sample files. Replace with your actual data
+//     FileItem(
+//         name: 'Document',
+//         type: 'PDF',
+//         size: 500,
+//         iconUrl: 'assets/icons/doc_file.svg'),
+//     FileItem(
+//         name: 'Image',
+//         type: 'Image',
+//         size: 300,
+//         iconUrl: 'assets/icons/image_file.svg'),
+//     // Add more files
+//   ];
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(8.0),
-      child: GridView.builder(
-        shrinkWrap: true,
-        itemCount: files.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4, // Adjust the number of columns
-          crossAxisSpacing: 8.0,
-          mainAxisSpacing: 8.0,
-        ),
-        itemBuilder: (context, index) {
-          return _buildFileItem(files[index]);
-        },
-      ),
-    );
-  }
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       padding: EdgeInsets.all(8.0),
+//       child: GridView.builder(
+//         shrinkWrap: true,
+//         itemCount: files.length,
+//         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+//           crossAxisCount: 4, // Adjust the number of columns
+//           crossAxisSpacing: 8.0,
+//           mainAxisSpacing: 8.0,
+//         ),
+//         itemBuilder: (context, index) {
+//           return _buildFileItem(files[index]);
+//         },
+//       ),
+//     );
+//   }
 
-  Widget _buildFileItem(FileItem file) {
-    return Card(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          // Assuming you're using SVG icons; you can use Image.network for actual images
-          //SvgPicture.asset(file.iconUrl),
-          SizedBox(height: 8),
-          Text(file.name, style: TextStyle(fontWeight: FontWeight.bold)),
-          SizedBox(height: 8),
-          Text('${file.size} KB'),
-        ],
-      ),
-    );
-  }
-}
+//   Widget _buildFileItem(FileItem file) {
+//     return Card(
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: <Widget>[
+//           // Assuming you're using SVG icons; you can use Image.network for actual images
+//           //SvgPicture.asset(file.iconUrl),
+//           SizedBox(height: 8),
+//           Text(file.name, style: TextStyle(fontWeight: FontWeight.bold)),
+//           SizedBox(height: 8),
+//           Text('${file.size} KB'),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class ItemsManagerScreen extends StatelessWidget {
   @override
@@ -92,12 +93,9 @@ class ItemsManagerScreen extends StatelessWidget {
                     flex: 5,
                     child: Column(
                       children: [
-                        MyFiles(),
                         SizedBox(height: defaultPadding),
                         if (Responsive.isMobile(context))
                           SizedBox(height: defaultPadding),
-                        if (Responsive.isMobile(context)) StorageDetails(),
-                        SizedBox(height: defaultPadding),
                         if (state is ItemsFetchedState)
                           ItemsManager(items: state.items)
                         else
@@ -140,7 +138,9 @@ class ItemsManager extends StatelessWidget {
         rows: items
             .map(
               (item) => DataRow(cells: [
-                DataCell(Image.network(item.photoUrl!)),
+                DataCell(item.photoUrl == null
+                    ? SvgPicture.network(placeholderImage)
+                    : Image.network(item.photoUrl!)),
                 DataCell(Text(item.name)),
                 DataCell(Text('\$${item.price.toStringAsFixed(2)}')),
               ]),
