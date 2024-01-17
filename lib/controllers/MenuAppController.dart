@@ -1,12 +1,9 @@
-import 'dart:io';
 
+import 'package:admin/controllers/repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:admin/screens/main/main_screen.dart';
 import 'package:aliafitness_shared_classes/aliafitness_shared_classes.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 abstract class MenuAppEvent {}
 
@@ -18,7 +15,6 @@ class SetCurrentScreenEvent extends MenuAppEvent {
 
 class ToggleMenuEvent extends MenuAppEvent {}
 
-class FetchItemsEvent extends MenuAppEvent {}
 
 abstract class MenuAppState {}
 
@@ -43,6 +39,7 @@ class DrawerToggledState extends MenuAppState {
 }
 
 class MenuAppBloc extends Bloc<MenuAppEvent, MenuAppState> {
+  final Repository repository = Repository();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   MenuAppBloc() : super(MenuInitialState()) {
@@ -57,29 +54,14 @@ class MenuAppBloc extends Bloc<MenuAppEvent, MenuAppState> {
       }
       emit(DrawerToggledState(!isDrawerOpen));
     });
-
-    on<FetchItemsEvent>((event, emit) async {
-      try {
-        var url = Uri.parse(
-            '${dotenv.env['SERVER_URL']}${dotenv.env['ITEMS_ENDPOINT']}');
-        final response = await http.get(url, headers: {
-          'Authorization': dotenv.env['AUTH_TOKEN']!,
-          HttpHeaders.contentTypeHeader: ContentType.json.toString()
-        });
-        if (response.statusCode == 200) {
-          List<dynamic> data = json.decode(response.body);
-          List<Item> items = data.map((item) => Item.fromJson(item)).toList();
-          emit(ItemsFetchedState(items));
-        } else {
-          // Handle error
-        }
-      } catch (e) {
-        print(e);
-      }
-    });
   }
 
   GlobalKey<ScaffoldState> get scaffoldKey => _scaffoldKey;
+}
 
-  // Add other methods as needed
+class CouldNotFetchItems implements Exception {
+  final errorMessage = "Could not fetch items from backend.";
+
+  @override
+  String toString() => errorMessage;
 }

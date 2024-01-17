@@ -2,6 +2,7 @@ import 'package:admin/constants_and_variables.dart';
 import 'package:admin/controllers/MenuAppController.dart';
 import 'package:admin/responsive.dart';
 import 'package:admin/screens/dashboard/components/storage_details.dart';
+import 'package:admin/screens/items/items_manager_bloc.dart';
 import 'package:admin/screens/main/components/header.dart';
 import 'package:aliafitness_shared_classes/aliafitness_shared_classes.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +77,6 @@ class FileItem {
 class ItemsManagerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<MenuAppBloc>(context).add(FetchItemsEvent());
     return BlocBuilder<MenuAppBloc, MenuAppState>(builder: (context, state) {
       return SafeArea(
         child: SingleChildScrollView(
@@ -122,35 +122,40 @@ class ItemsManagerScreen extends StatelessWidget {
 
 class ItemsManager extends StatelessWidget {
   final List<Item> items;
+  final ItemsManagerBloc _itemsManagerBloc;
 
-  ItemsManager({required this.items});
+  ItemsManager({required this.items}) : _itemsManagerBloc = ItemsManagerBloc();
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: DataTable(
-        columns: const [
-          DataColumn(label: Text('Photo')),
-          DataColumn(label: Text('Name')),
-          DataColumn(label: Text('Price')),
-          DataColumn(label: Text('Action')),
-        ],
-        rows: items
-            .map(
-              (item) => DataRow(cells: [
-                DataCell(item.photoUrl == null
-                    ? SvgPicture.network(placeholderImage)
-                    : Image.network(item.photoUrl!)),
-                DataCell(Text(item.name)),
-                DataCell(Text('\$${item.price.toStringAsFixed(2)}')),
-                DataCell(TextButton(
-                  child: Text(editText),
-                  onPressed: () {},
-                )),
-              ]),
-            )
-            .toList(),
+    BlocProvider.of<ItemsManagerBloc>(context).add(FetchItemsEvent());
+    return BlocProvider<ItemsManagerBloc>.value(
+      value: _itemsManagerBloc,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: DataTable(
+          columns: const [
+            DataColumn(label: Text('Photo')),
+            DataColumn(label: Text('Name')),
+            DataColumn(label: Text('Price')),
+            DataColumn(label: Text('Action')),
+          ],
+          rows: items
+              .map(
+                (item) => DataRow(cells: [
+                  DataCell(item.photoUrl == null
+                      ? SvgPicture.network(placeholderImage)
+                      : Image.network(item.photoUrl!)),
+                  DataCell(Text(item.name)),
+                  DataCell(Text('\$${item.price.toStringAsFixed(2)}')),
+                  DataCell(TextButton(
+                    child: Text(editText),
+                    onPressed: () {},
+                  )),
+                ]),
+              )
+              .toList(),
+        ),
       ),
     );
   }
