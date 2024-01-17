@@ -1,4 +1,5 @@
 import 'package:admin/controllers/MenuAppController.dart';
+import 'package:admin/main.dart';
 import 'package:admin/screens/main/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,23 +22,20 @@ class SideMenu extends StatelessWidget {
             DrawerListTile(
               title: "Dashboard",
               svgSrc: "assets/icons/menu_dashboard.svg",
-              press: () {
-                Navigator.of(context).pushNamed(Routes.dashboard.name);
-              },
+              press: () =>
+                  navigatorKey.currentState?.pushNamed(Routes.dashboard.name),
             ),
             DrawerListTile(
               title: "Transaction",
               svgSrc: "assets/icons/menu_tran.svg",
-              press: () {
-                Navigator.of(context).pushNamed(Routes.transactions.name);
-              },
+              press: () => navigatorKey.currentState
+                  ?.pushNamed(Routes.transactions.name),
             ),
             DrawerListTile(
               title: "Items",
               svgSrc: "assets/icons/menu_task.svg",
-              press: () {
-                Navigator.of(context).pushNamed(Routes.itemsManager.name);
-              },
+              press: () => navigatorKey.currentState
+                  ?.pushNamed(Routes.itemsManager.name),
             ),
             // DrawerListTile(
             //   title: "Documents",
@@ -62,9 +60,8 @@ class SideMenu extends StatelessWidget {
             DrawerListTile(
               title: "Settings",
               svgSrc: "assets/icons/menu_setting.svg",
-              press: () {
-                Navigator.of(context).pushNamed(Routes.settings.name);
-              },
+              press: () =>
+                  navigatorKey.currentState?.pushNamed(Routes.settings.name),
             ),
           ],
         ),

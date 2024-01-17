@@ -6,9 +6,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'components/side_menu.dart';
 
-enum Routes { dashboard, transactions, itemsManager, settings }
+enum Routes {
+  dashboard,
+  transactions,
+  itemsManager,
+  settings;
 
-extension RoutesExtension on Routes {
+  @override
+  String toString() => this.name;
+
   String get title {
     switch (this) {
       case Routes.dashboard:

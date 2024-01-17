@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Flutter-Admin-Panel",
+      "request": "launch",
+      "type": "dart"
+    },
+    {
+      "name": "Flutter-Admin-Panel (profile mode)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "Flutter-Admin-Panel (release mode)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release"
+    },
+    {
+      "name": "Flutter (Chrome)",
+      "program": "lib/main.dart",
+      "deviceId": "chrome",
+      "request": "launch",
+      "type": "dart"
+    }
+  ]
+}
