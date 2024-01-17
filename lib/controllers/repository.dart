@@ -12,13 +12,18 @@ class Repository {
   final http.Client httpClient;
   final String backendUrl;
   final String itemsEndpoint;
+  late final Map<String, String> headers;
 
   Repository._initClient()
       : httpClient = http.Client(),
         backendUrl =
             dotenv.env[EnvConst.SERVER_URL] ?? EnvConst.readFromEnvFailed,
         itemsEndpoint =
-            dotenv.env[EnvConst.ITEMS_ENDPOINT] ?? EnvConst.readFromEnvFailed;
+            dotenv.env[EnvConst.ITEMS_ENDPOINT] ?? EnvConst.readFromEnvFailed,
+        headers = {
+          HttpHeaders.authorizationHeader: dotenv.env[EnvConst.AUTH_TOKEN]!,
+          HttpHeaders.contentTypeHeader: ContentType.json.value,
+        };
 
   factory Repository() {
     return _instance;
@@ -27,14 +32,14 @@ class Repository {
   Future<List<Item>?> getItems() async {
     try {
       var url = Uri.parse('$backendUrl$itemsEndpoint');
-      final response = await httpClient.get(url, headers: {
-        HttpHeaders.authorizationHeader: dotenv.env[EnvConst.AUTH_TOKEN]!,
-        HttpHeaders.contentTypeHeader: ContentType.json.toString()
-      });
+      final response = await httpClient.get(url, headers: headers);
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
         List<Item> items = data.map((item) => Item.fromJson(item)).toList();
         return items;
+      } else if (response.statusCode == 401) {
+        httpClient.post(Uri.parse('${backendUrl}auth/login'),
+            body: {'username': 'shey23', 'password': 'potato69'});
       } else {
         log(
             'Received error code from server ${response.statusCode}. '

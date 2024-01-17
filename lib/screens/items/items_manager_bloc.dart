@@ -40,13 +40,18 @@ class ItemsManagerError extends ItemsManagerState {
 
 class ItemsManagerBloc extends Bloc<ItemsManagerEvent, ItemsManagerState> {
   final Repository repository;
+  static final ItemsManagerBloc _instance = ItemsManagerBloc._internal();
 
-  ItemsManagerBloc()
+  ItemsManagerBloc._internal()
       : repository = Repository(),
         super(ItemsManagerInitial()) {
     on<FetchItemsEvent>(_onLoadItems);
     on<EditItem>(_onEditItem);
     on<DeleteItem>(_onDeleteItem);
+  }
+
+  factory ItemsManagerBloc() {
+    return _instance;
   }
 
   void _onLoadItems(

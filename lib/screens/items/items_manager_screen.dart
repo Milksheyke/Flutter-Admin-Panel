@@ -4,7 +4,6 @@ import 'package:admin/responsive.dart';
 import 'package:admin/screens/dashboard/components/storage_details.dart';
 import 'package:admin/screens/items/items_manager_bloc.dart';
 import 'package:admin/screens/main/components/header.dart';
-import 'package:aliafitness_shared_classes/aliafitness_shared_classes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -80,83 +79,101 @@ class ItemsManagerScreen extends StatelessWidget {
     return BlocBuilder<MenuAppBloc, MenuAppState>(builder: (context, state) {
       return SafeArea(
         child: SingleChildScrollView(
-          primary: false,
-          padding: EdgeInsets.all(defaultPadding),
-          child: Column(
-            children: [
-              Header(),
-              SizedBox(height: defaultPadding),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 5,
-                    child: Column(
-                      children: [
-                        SizedBox(height: defaultPadding),
-                        if (Responsive.isMobile(context))
-                          SizedBox(height: defaultPadding),
-                        if (state is ItemsFetchedState)
-                          ItemsManager(items: state.items)
-                        else
-                          CircularProgressIndicator(),
-                      ],
+            primary: false,
+            padding: EdgeInsets.all(defaultPadding),
+            child: Column(
+              children: [
+                Header(),
+                SizedBox(height: defaultPadding),
+                Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  BlocProvider.value(
+                    value: ItemsManagerBloc(),
+                    child: Expanded(
+                      flex: 5,
+                      child: BlocBuilder<ItemsManagerBloc, ItemsManagerState>(
+                          builder: (context, state) {
+                        return Column(
+                          children: [
+                            SizedBox(height: defaultPadding),
+                            if (Responsive.isMobile(context))
+                              SizedBox(height: defaultPadding),
+                            BlocProvider.value(
+                              value: ItemsManagerBloc(),
+                              child: ItemsManager(),
+                            ),
+                          ],
+                        );
+                      }),
                     ),
                   ),
-                  if (!Responsive.isMobile(context))
-                    SizedBox(width: defaultPadding),
-                  if (!Responsive.isMobile(context))
-                    Expanded(
-                      flex: 2,
-                      child: StorageDetails(),
-                    ),
-                ],
-              )
-            ],
-          ),
-        ),
+                ]),
+                if (!Responsive.isMobile(context))
+                  SizedBox(width: defaultPadding),
+                if (!Responsive.isMobile(context))
+                  Expanded(
+                    flex: 2,
+                    child: StorageDetails(),
+                  ),
+              ],
+            )),
       );
     });
   }
 }
 
-class ItemsManager extends StatelessWidget {
-  final List<Item> items;
+class ItemsManager extends StatefulWidget {
   final ItemsManagerBloc _itemsManagerBloc;
 
-  ItemsManager({required this.items}) : _itemsManagerBloc = ItemsManagerBloc();
+  ItemsManager() : _itemsManagerBloc = ItemsManagerBloc();
+
+  @override
+  State<ItemsManager> createState() => _ItemsManagerState();
+}
+
+class _ItemsManagerState extends State<ItemsManager> {
+  @override
+  void initState() {
+    BlocProvider.of<ItemsManagerBloc>(context).add(FetchItemsEvent());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<ItemsManagerBloc>(context).add(FetchItemsEvent());
-    return BlocProvider<ItemsManagerBloc>.value(
-      value: _itemsManagerBloc,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: DataTable(
-          columns: const [
-            DataColumn(label: Text('Photo')),
-            DataColumn(label: Text('Name')),
-            DataColumn(label: Text('Price')),
-            DataColumn(label: Text('Action')),
-          ],
-          rows: items
-              .map(
-                (item) => DataRow(cells: [
-                  DataCell(item.photoUrl == null
-                      ? SvgPicture.network(placeholderImage)
-                      : Image.network(item.photoUrl!)),
-                  DataCell(Text(item.name)),
-                  DataCell(Text('\$${item.price.toStringAsFixed(2)}')),
-                  DataCell(TextButton(
-                    child: Text(editText),
-                    onPressed: () {},
-                  )),
-                ]),
-              )
-              .toList(),
-        ),
-      ),
-    );
+    return BlocBuilder<ItemsManagerBloc, ItemsManagerState>(
+        builder: (context, state) {
+      if (state is ItemsManagerInitial || state is ItemsManagerLoading) {
+        return CircularProgressIndicator();
+      }
+      if (state is ItemsManagerLoaded)
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+            columns: const [
+              DataColumn(label: Text('Photo')),
+              DataColumn(label: Text('Name')),
+              DataColumn(label: Text('Price')),
+              DataColumn(label: Text('Action')),
+            ],
+            rows: state.items
+                .map(
+                  (item) => DataRow(cells: [
+                    DataCell(item.photoUrl == null
+                        ? SvgPicture.network(placeholderImage)
+                        : Image.network(item.photoUrl!)),
+                    DataCell(Text(item.name)),
+                    DataCell(Text('\$${item.price.toStringAsFixed(2)}')),
+                    DataCell(TextButton(
+                      child: Text(editText),
+                      onPressed: () {},
+                    )),
+                  ]),
+                )
+                .toList(),
+          ),
+        );
+      else {
+        return Text('An error occurred while fetching data.');
+      }
+    });
   }
 }
