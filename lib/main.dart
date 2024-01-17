@@ -1,27 +1,19 @@
-
 import 'package:admin/constants_and_variables.dart';
 import 'package:admin/controllers/MenuAppController.dart';
 import 'package:admin/screens/main/main_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: '../.env');
-  var menuAppController = MenuAppController();
-  await menuAppController.fetchItems();
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (context) => MenuAppController(),
-        ),
-      ],
-      child: MyApp(),
-    ),
-  );
+  
+  runApp(BlocProvider(
+    create: (context) => MenuAppBloc(),
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {

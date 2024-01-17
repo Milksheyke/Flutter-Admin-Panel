@@ -5,7 +5,7 @@ import 'package:admin/screens/dashboard/components/storage_details.dart';
 import 'package:admin/screens/main/components/header.dart';
 import 'package:aliafitness_shared_classes/aliafitness_shared_classes.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FileItem {
   final String name;
@@ -75,46 +75,50 @@ class MyFiles extends StatelessWidget {
 class ItemsManagerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Provider.of<MenuAppController>(context).fetchItems();
-    List<Item> items = context.watch<MenuAppController>().items;
-    return SafeArea(
-      child: SingleChildScrollView(
-        primary: false,
-        padding: EdgeInsets.all(defaultPadding),
-        child: Column(
-          children: [
-            Header(),
-            SizedBox(height: defaultPadding),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 5,
-                  child: Column(
-                    children: [
-                      MyFiles(),
-                      SizedBox(height: defaultPadding),
-                      if (Responsive.isMobile(context))
-                        SizedBox(height: defaultPadding),
-                      if (Responsive.isMobile(context)) StorageDetails(),
-                      SizedBox(height: defaultPadding),
-                      ItemsManager(items: items),
-                    ],
-                  ),
-                ),
-                if (!Responsive.isMobile(context))
-                  SizedBox(width: defaultPadding),
-                if (!Responsive.isMobile(context))
+    BlocProvider.of<MenuAppBloc>(context).add(FetchItemsEvent());
+    return BlocBuilder<MenuAppBloc, MenuAppState>(builder: (context, state) {
+      return SafeArea(
+        child: SingleChildScrollView(
+          primary: false,
+          padding: EdgeInsets.all(defaultPadding),
+          child: Column(
+            children: [
+              Header(),
+              SizedBox(height: defaultPadding),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Expanded(
-                    flex: 2,
-                    child: StorageDetails(),
+                    flex: 5,
+                    child: Column(
+                      children: [
+                        MyFiles(),
+                        SizedBox(height: defaultPadding),
+                        if (Responsive.isMobile(context))
+                          SizedBox(height: defaultPadding),
+                        if (Responsive.isMobile(context)) StorageDetails(),
+                        SizedBox(height: defaultPadding),
+                        if (state is ItemsFetchedState)
+                          ItemsManager(items: state.items)
+                        else
+                          CircularProgressIndicator(),
+                      ],
+                    ),
                   ),
-              ],
-            )
-          ],
+                  if (!Responsive.isMobile(context))
+                    SizedBox(width: defaultPadding),
+                  if (!Responsive.isMobile(context))
+                    Expanded(
+                      flex: 2,
+                      child: StorageDetails(),
+                    ),
+                ],
+              )
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
 
